@@ -1,23 +1,25 @@
 import React from 'react';
-import {
-    View,
-    Text,
-    StyleSheet,
-    Image
-} from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 
 class SplashScreen extends React.Component {
-    componentDidMount() {
+    componentWillReceiveProps(nextProps) {
+        const {navigate} = this.props.navigation;
         setTimeout(() => {
-            this.props.navigator.push('home');
+            navigate('home');
+        }, 1500);
+    }
+    componentDidMount() {
+        const {navigate} = this.props.navigation;
+        setTimeout(() => {
+            navigate('home');
         }, 1500);
     }
     render() {
         return (
-            <View style={styles.container}>
-                <Image source={require('../images/logonike.png')} style={styles.logo} />
+            <View style={ styles.container }>
+              <Image source={ require('../images/logonike.png') } style={ styles.logo } />
             </View>
-        );
+            );
     }
 }
 

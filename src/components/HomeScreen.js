@@ -1,19 +1,7 @@
 import React from 'react';
-import {
-    View,
-    Text,
-    StyleSheet,
-    Image,
-    StatusBar,
-    TouchableOpacity,
-    Animated,
-    Easing,
-    PanResponder,
-    ScrollView,
-    Dimensions
-} from 'react-native';
+import { View, Text, StyleSheet, Image, StatusBar, TouchableOpacity, Animated, Easing, PanResponder, ScrollView, Dimensions} from 'react-native';
 
-import { Components, Location, Permissions } from 'exponent';
+import { MapView, LinearGradient, Location, Permissions } from 'expo';
 import FadedZoom from '../animations/FadedZoom';
 import CardProfile from './CardProfile';
 import CardCoach from './CardCoach';
@@ -47,7 +35,9 @@ class HomeScreen extends React.Component {
     }
 
     componentWillMount() {
-        this.mover = Animated.event([ null, { dy: this.state.pan.y }]);
+        this.mover = Animated.event([null, {
+            dy: this.state.pan.y
+        }]);
         this._panResponder = PanResponder.create({
             onMoveShouldSetResponderCapture: () => {
                 return true;
@@ -61,22 +51,33 @@ class HomeScreen extends React.Component {
 
             onPanResponderGrant: (e, gestureState) => {
                 if (!this.state.carousel) {
-                    this.state.pan.setOffset({x: this.state.pan.x._value, y: this.state.pan.y._value});
-                    this.state.pan.setValue({x: 0, y: 0});
+                    this.state.pan.setOffset({
+                        x: this.state.pan.x._value,
+                        y: this.state.pan.y._value
+                    });
+                    this.state.pan.setValue({
+                        x: 0,
+                        y: 0
+                    });
                 }
             },
             onPanResponderMove: (e, gesture) => {
                 if (this.state.carousel) {
                     return;
                 }
-                return this.mover(e, gesture) ;
+                return this.mover(e, gesture);
             },
             onPanResponderRelease: (e, gesture) => {
                 // Set the initial value to the current state
                 if (this.isDropZone(gesture)) {
                     Animated.spring(
                         this.state.pan,
-                        {toValue:{x:0,y:-280}}
+                        {
+                            toValue: {
+                                x: 0,
+                                y: -280
+                            }
+                        }
                     ).start(() => {
                         this.state.pan.flattenOffset();
                     });
@@ -86,7 +87,12 @@ class HomeScreen extends React.Component {
                 } else {
                     Animated.spring(
                         this.state.pan,
-                        {toValue:{x:0,y:0}}
+                        {
+                            toValue: {
+                                x: 0,
+                                y: 0
+                            }
+                        }
                     ).start();
                     this.setState({
                         carousel: false
@@ -104,21 +110,29 @@ class HomeScreen extends React.Component {
 
             // Initially, set the value of x and y to 0 (the center of the screen)
             onPanResponderGrant: (e, gestureState) => {
-                this.state.pan.setValue({x: 0, y: -280});
+                this.state.pan.setValue({
+                    x: 0,
+                    y: -280
+                });
             },
 
             onPanResponderMove: (e, gesture) => {
                 if (this.state.carousel) {
                     return;
                 }
-                return this.mover(e, gesture) ;
+                return this.mover(e, gesture);
             },
 
             onPanResponderRelease: (e, gesture) => {
                 if (!this.isDropZone(gesture)) {
                     Animated.spring(
                         this.state.pan,
-                        {toValue:{x:0,y:0}}
+                        {
+                            toValue: {
+                                x: 0,
+                                y: 0
+                            }
+                        }
                     ).start();
                     this.setState({
                         carousel: false
@@ -132,11 +146,16 @@ class HomeScreen extends React.Component {
             Animated.sequence([
                 Animated.spring(
                     this.state.pulse,
-                    {toValue: 1, friction: 1}
+                    {
+                        toValue: 1,
+                        friction: 1
+                    }
                 ),
                 Animated.spring(
                     this.state.pulse,
-                    {toValue: 0.8}
+                    {
+                        toValue: 0.8
+                    }
                 )
             ]).start();
         }, 2000);
@@ -169,93 +188,75 @@ class HomeScreen extends React.Component {
         },
     }
     onRegionChange = (region) => {
-        this.setState({ region });
+        this.setState({
+            region
+        });
     }
     onBegin = () => {
-        this.props.navigator.push('begin');
+        const {navigate } = this.props.navigation
+        navigate('begin');
     };
     onHistory = () => {
-        this.props.navigator.push('history');  
+        const {navigate } = this.props.navigation
+        navigate('history');
     };
     render() {
-        let { pan, scale } = this.state;
+        let {pan, scale} = this.state;
         let [translateX, translateY] = [pan.x, pan.y];
-        const {MapView} = Components;
         return (
-            <View style={styles.container}>
-                <StatusBar
-                    backgroundColor="white"
-                    barStyle="dark-content"
-                />
-                <MapView
-                    style={{flex: 1, marginBottom: 120}}
-                    region={this.state.region}
-                    onRegionChange={this.onRegionChange}
-                >
-                    <MapView.Marker
-                        coordinate={this.state.marker}
-                        title={'My Location'}
-                    >  
-                        <Animated.View style={{position: 'absolute', top: -20, left: -20, width: 40, height: 40, backgroundColor: 'rgba(98,186,85,0.4)', borderRadius: 20, transform: [{scale: this.state.pulse}]}} />
-                        <Animated.View style={{position: 'absolute', top: -40, left: -40, width: 80, height: 80, backgroundColor: 'rgba(98,186,85,0.2)', borderRadius: 40, transform: [{scale: this.state.pulse}]}} />
-                        <Animated.View style={{position: 'absolute', top: -10, left: -10, width: 20, height: 20, backgroundColor: 'rgba(98,186,85,1)', borderColor: '#fff', borderWidth: 2, borderRadius: 10, transform: [{scale: this.state.pulse}]}} />
-                    </MapView.Marker>
-                </MapView>
-                <View style={styles.toolbar}>
-                    <Components.LinearGradient
-                        colors={['rgba(255,255,255,1)', 'rgba(255,255,255,0.8)', 'rgba(255,255,255,0)']}
-                        style={{height: 50, position: 'absolute', top: 0, left: 0, right: 0}} />
-                    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                        <Image source={require('../images/left-icon.png')} style={styles.logoicon} />
-                    </View>
-                    <View style={{flex: 3, justifyContent: 'center', alignItems: 'center'}}>
-                        <Image source={require('../images/logonike.png')} style={styles.logosmall} />
-                    </View>
-                    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                        <Image source={require('../images/right-icon.png')} style={styles.logoicon} />
-                    </View>
+            <View style={ styles.container }>
+              <StatusBar backgroundColor="white" barStyle="dark-content" />
+              <MapView style={ { flex: 1, marginBottom: 120 } } region={ this.state.region } onRegionChange={ this.onRegionChange }>
+                <MapView.Marker coordinate={ this.state.marker } title={ 'My Location' }>
+                  <Animated.View style={ { position: 'absolute', top: -20, left: -20, width: 40, height: 40, backgroundColor: 'rgba(98,186,85,0.4)', borderRadius: 20, transform: [{ scale: this.state.pulse }] } } />
+                  <Animated.View style={ { position: 'absolute', top: -40, left: -40, width: 80, height: 80, backgroundColor: 'rgba(98,186,85,0.2)', borderRadius: 40, transform: [{ scale: this.state.pulse }] } } />
+                  <Animated.View style={ { position: 'absolute', top: -10, left: -10, width: 20, height: 20, backgroundColor: 'rgba(98,186,85,1)', borderColor: '#fff', borderWidth: 2, borderRadius: 10, transform: [{ scale: this.state.pulse }] } } />
+                </MapView.Marker>
+              </MapView>
+              <View style={ styles.toolbar }>
+                <LinearGradient colors={ ['rgba(255,255,255,1)', 'rgba(255,255,255,0.8)', 'rgba(255,255,255,0)'] } style={ { height: 50, position: 'absolute', top: 0, left: 0, right: 0 } } />
+                <View style={ { flex: 1, justifyContent: 'center', alignItems: 'center' } }>
+                  <Image source={ require('../images/left-icon.png') } style={ styles.logoicon } />
                 </View>
-                <View style={styles.content}>
-                    <Animated.View style={{transform: [{translateX}, {translateY}, {rotate: '0deg'}, {scale}], marginBottom: -180}} {...this._panResponder.panHandlers}>
-                        <ScrollView
-                            horizontal={true} 
-                            snapToInterval={windowWidth} 
-                            snapToAlignment={'center'}
-                            decelerationRate={0}
-                            scrollEnabled={this.state.carousel}
-                            automaticallyAdjustInsets={false}>
-                            <Animated.View {...this._panResponder2.panHandlers}>
-                                <TouchableOpacity onPress={this.onHistory}>
-                                    <CardProfile />
-                                </TouchableOpacity>
-                            </Animated.View>
-                            <Animated.View {...this._panResponder2.panHandlers}>
-                                <TouchableOpacity onPress={this.onHistory}>
-                                    <CardCoach />
-                                </TouchableOpacity>
-                            </Animated.View>
-                            <Animated.View {...this._panResponder2.panHandlers}>
-                                <TouchableOpacity onPress={this.onHistory}>
-                                    <CardHistory />
-                                </TouchableOpacity>
-                            </Animated.View>
-                        </ScrollView>
+                <View style={ { flex: 3, justifyContent: 'center', alignItems: 'center' } }>
+                  <Image source={ require('../images/logonike.png') } style={ styles.logosmall } />
+                </View>
+                <View style={ { flex: 1, justifyContent: 'center', alignItems: 'center' } }>
+                  <Image source={ require('../images/right-icon.png') } style={ styles.logoicon } />
+                </View>
+              </View>
+              <View style={ styles.content }>
+                <Animated.View style={ { transform: [{ translateX }, { translateY }, { rotate: '0deg' }, { scale }], marginBottom: -180 } } {...this._panResponder.panHandlers}>
+                  <ScrollView horizontal={ true } snapToInterval={ windowWidth } snapToAlignment={ 'center' } decelerationRate={ 0 } scrollEnabled={ this.state.carousel }
+                    automaticallyAdjustInsets={ false }>
+                    <Animated.View {...this._panResponder2.panHandlers}>
+                      <TouchableOpacity onPress={ this.onHistory }>
+                        <CardProfile />
+                      </TouchableOpacity>
                     </Animated.View>
-                </View>
-                <View style={styles.footer}>
-                    <Components.LinearGradient
-                        pointerEvents="none"
-                        colors={['rgba(255,255,255,0)', 'rgba(255,255,255,0.8)', 'rgba(255,255,255,1)', 'rgba(255,255,255,1)']}
-                        style={{height: 200, position: 'absolute', bottom: 0, left: 0, right: 0}} />
-                    <TouchableOpacity style={styles.buttonRedWrapper} onPress={this.onBegin}>
-                        <View style={styles.buttonRed} shadowColor={'#f02733'} shadowOffset={{width: 0, height: 10}} shadowOpacity={0.4} shadowRadius={20}>
-                            <Text style={styles.buttonRedText}>BEGIN RUN</Text>
-                        </View>
-                    </TouchableOpacity>
-                </View>
-                
+                    <Animated.View {...this._panResponder2.panHandlers}>
+                      <TouchableOpacity onPress={ this.onHistory }>
+                        <CardCoach />
+                      </TouchableOpacity>
+                    </Animated.View>
+                    <Animated.View {...this._panResponder2.panHandlers}>
+                      <TouchableOpacity onPress={ this.onHistory }>
+                        <CardHistory />
+                      </TouchableOpacity>
+                    </Animated.View>
+                  </ScrollView>
+                </Animated.View>
+              </View>
+              <View style={ styles.footer }>
+                <LinearGradient pointerEvents="none" colors={ ['rgba(255,255,255,0)', 'rgba(255,255,255,0.8)', 'rgba(255,255,255,1)', 'rgba(255,255,255,1)'] } style={ { height: 200, position: 'absolute', bottom: 0, left: 0, right: 0 } } />
+                <TouchableOpacity style={ styles.buttonRedWrapper } onPress={ this.onBegin }>
+                  <View style={ styles.buttonRed } shadowColor={ '#f02733' } shadowOffset={ { width: 0, height: 10 } } shadowOpacity={ 0.4 } shadowRadius={ 20 }>
+                    <Text style={ styles.buttonRedText }>BEGIN RUN</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
             </View>
-        );
+            );
     }
 }
 

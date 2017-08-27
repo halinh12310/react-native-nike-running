@@ -1,3 +1,5 @@
+This is a forked repo with latest version of Expo (20.0.0), and use react-navigation
+
 # Nike+ Running - React Native
 
 UI & UX Prototype of redesigned Nike+ Running App.
@@ -10,7 +12,7 @@ Inspiration: https://dribbble.com/shots/2764470-Rethinking-Nike-Running
 
 ## Demo
 
-Exponent: https://exp.host/@sonnylazuardi/nike-plus-running
+Exponent: https://expo.io/@virusvn/react-native-air-running
 
 ## Features
 
@@ -38,6 +40,7 @@ The homescreen will show your current location with animated marker
 
 ## MIT Licensed
 
+© 2017 Nhan Nguyen
 © 2016 Sonny Lazuardi
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
